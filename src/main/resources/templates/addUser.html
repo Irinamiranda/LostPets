@@ -7,65 +7,53 @@
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 </head>
 <body>
-<div>
-    <nav class="navbar navbar navbar-expand-lg navbar-light bg-dark">
-        <a class="navbar-brand text-white" href="/">Lost Pets App</a>
+<div th:replace="base :: menubar"></div>
 
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="nav navbar-nav ml-auto">
-                <li class="nav-item text-light active">
-                    <a class="nav-link text-white" href="/">Home</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-</div>
 <div class="container bg-light">
-    <h2>Register Information</h2>
-    <form action="#"
-          th:action="@{/processUser}"
+    <h2>Register New User</h2>
+
+    <form th:action="@{/processUser}"
           th:object="${user}"
           method="post">
         <input type="hidden" th:field="*{id}"/>
 
-    </form>
-    <form action="#" th:action="@{/processUser}" th:object="${user}" method="post">
-        First Name:
-        <input type="text" th:field="*{firstName}"/>
-        <span th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></span><br/>
+        <div class="form-group">
+            <label for="inputFirstName">First Name:</label>
+            <input th:field="*{firstName}" type="text" class="form-control" id="inputFirstName"
+                   placeholder="First Name">
+            <div th:if="${#fields.hasErrors('firstName')}" class="alert alert-danger" th:errors="*{firstName}"></div>
 
-        Last Name:
-        <input type="text" th:field="*{lastName}"/>
-        <span th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></span><br/>
+            <label for="inputLastName">Last Name:</label>
+            <input th:field="*{lastName}" type="text" class="form-control" id="inputLastName"
+                   placeholder="Last Name">
+            <div th:if="${#fields.hasErrors('lastName')}" class="alert alert-danger" th:errors="*{lastName}"></div>
 
-        EMail:
-        <input type="text" th:field="*{email}"/>
-        <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span><br/>
+            <label for="inputEmail">EMail:</label>
+            <input th:field="*{email}" type="text" class="form-control" id="inputEmail"
+                   placeholder="EMail">
+            <div th:if="${#fields.hasErrors('email')}" class="alert alert-danger" th:errors="*{email}"></div>
+        </div>
 
-        Username:
-        <input type="text" th:field="*{username}"/>
-        <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span><br/>
+        <hr/>
 
-        Password:
-        <input type="text" th:field="*{password}"/>
-        <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span><br/>
+        <div class="form-group">
+            <label for="inputUsername">Username:</label>
+            <input th:field="*{username}" type="text" class="form-control" id="inputUsername"
+                   placeholder="Username">
+            <div th:if="${#fields.hasErrors('username')}" class="alert alert-danger" th:errors="*{username}"></div>
 
-        <br/>
-        <input type="submit" value="Submit"/>
+            <label for="inputPassword">Password:</label>
+            <input th:field="*{password}" type="password" class="form-control" id="inputPassword"
+                   placeholder="Password">
+            <div th:if="${#fields.hasErrors('password')}" class="alert alert-danger" th:errors="*{password}"></div>
+        </div>
+
+        <hr/>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
 
-
-<footer class="navbar navbar navbar-expand-lg navbar-light bg-dark fixed-bottom">
-    <span class="mr-auto"></span>
-    <div class="text-muted">
-        <h6>© 2018</h6>
-    </div>
-</footer>
+<div th:replace="base :: footer"></div>
 </body>
 </html>

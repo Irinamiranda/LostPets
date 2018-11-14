@@ -1,9 +1,6 @@
 package com.example.demo;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Pet {
@@ -13,9 +10,30 @@ public class Pet {
     private Long id;
     private String name;
     private String category;
+    private String picture;
+
+
+    @ManyToOne
+    private User owner;
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
 
     public String getDate() {
         return date;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 
     public void setDate(String date) {
@@ -23,8 +41,15 @@ public class Pet {
     }
 
     private String date;
-    private boolean isLost;
+    private String status;
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public Long getId() {
         return id;
@@ -50,11 +75,5 @@ public class Pet {
         this.category = category;
     }
 
-    public boolean isLost() {
-        return isLost;
-    }
 
-    public void setLost(boolean lost) {
-        isLost = lost;
-    }
 }

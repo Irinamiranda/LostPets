@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>index</title>
@@ -9,81 +10,36 @@
 
 </head>
 <body>
+<div th:replace="base :: menubar"></div>
 
-<!-- Nav header -->
-<div>
-    <nav class="navbar navbar navbar-expand-lg navbar-light bg-dark">
-        <a class="navbar-brand text-white" href="/">Lost Pets App</a>
-
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="nav navbar-nav ml-auto">
-                <li class="nav-item text-light active">
-                    <a class="nav-link text-white" href="/">Home</a>
-                </li>
-
-                <li class="nav-item text-light">
-                    <a class="nav-link text-white" href="/login">Login</a>
-                </li>
-                <li class="nav-item text-light">
-                    <a class="nav-link text-white" href="/register">Register</a>
-                </li>
-
-            </ul>
-        </div>
-    </nav>
+<div class="container">
+    <h1 class="text-center">Welcome to Lost Pets App!</h1>
 </div>
 
-<h2>Welcome to Lost Pets Application!</h2>
 <div th:if="${param.logout}" class="alert alert-info" role="alert">
     You have been logged out
 </div>
-<div class="container">
-    <h2 class="text-center py-3 pl-4 pr-5">List of Pets</h2>
-    <div align="center">
-        <table class="table table-hover">
-            <thead>
-            <tr>
-                <th scope="col">Category</th>
-                <th scope="col">Name</th>
-                <th scope="col">Date</th>
-                <th scope="col">Status</th>
-                <th scope="col"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="pet: ${pets}">
-                <td th:text="${pet.category}"></td>
-                <td th:text="${pet.name}"></td>
-                <td th:text="${pet.date}"></td>
-                <td th:text="${pet.isLost()}"></td>
-                <td>
 
-                    <a th:href="@{/detail/{id}(id=${pet.id})}">Details</a> -
-
-                </td>
-            </tr>
-
-
-            </tbody>
-        </table>
+<a href="/addPet">Add Pet</a>
+<div th:each="pet:${pets}">
+    <div th:if="${pet.picture} !=null">
+        <img th:src="${pet.picture}" />
+        <hr/>
     </div>
+    <h3 th:text="${pet.name}"></h3>
+    <h4 th:text="${pet.category}"></h4>
+    <h4 th:text="${pet.date}"></h4>
+    <h3 th:text="${pet.status}"></h3>
 </div>
 
-<a href = "/login">Login</a>
-<a href = "/register">Register</a>
-<a href = "/pets">Pets</a>
 
-<footer class="navbar navbar navbar-expand-lg navbar-light bg-dark fixed-bottom">
-    <span class="mr-auto"></span>
-    <div class="text-muted">
-        <h6>© 2018</h6>
-    </div>
-</footer>
+    <a sec:authorize="isAuthenticated()" class="btn btn-secondary" th:href="@{/pets}" role="button">
+        My Pets
+    </a>
+    <a class="btn btn-secondary" th:href="@{/addPet}" role="button">New Pet</a>
+</div>
+
+<div th:replace="base :: footer"></div>
 
 </body>
 </html>

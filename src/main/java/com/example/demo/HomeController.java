@@ -1,33 +1,43 @@
 package com.example.demo;
 
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.security.Principal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Map;
 
 @Controller
 public class HomeController {
 
     @Autowired
-    PetRepository petRepository;
+    UserRepository userRepository;
 
     @Autowired
     RoleRepository roleRepository;
 
     @Autowired
-    UserRepository userRepository;
+    PetRepository petRepository;
+
+    @Autowired
+    CloudinaryConfig cloudc;
 
     @RequestMapping("/")
-    public String index(Model model) {
-        model.addAttribute("pets", petRepository.findAll());
+    public String index(Model model, Principal principal) {
+        User currentUser = principal != null ? userRepository.findByUsername(principal.getName()) : null;
+        model.addAttribute("user", currentUser);
 
+        model.addAttribute("pets", petRepository.findAll());
         return "index";
     }
 
@@ -46,7 +56,7 @@ public class HomeController {
     @PostMapping("/processUser")
     public String processUser(@Valid User user, BindingResult result) {
         if (result.hasErrors()) {
-            return "processUser";
+            return "addUser";
         }
 
         Role userRole = roleRepository.findByRole("USER");
@@ -57,29 +67,65 @@ public class HomeController {
         userRepository.save(user);
         return "redirect:/login";
     }
+
     @RequestMapping("/pets")
     public String listPets(Model model, Principal principal) {
-        model.addAttribute("user", userRepository.findByUsername(principal.getName()));
-        model.addAttribute("pets", petRepository.findAll());
+        User currentUser = userRepository.findByUsername(principal.getName());
+        model.addAttribute("user", currentUser);
+
+        model.addAttribute("pets", petRepository.findByOwner(currentUser));
+//        model.addAttribute("messages", messageRepository.findAll());
         return "petList";
     }
 
     @GetMapping("/addPet")
     public String addPet(Model model, Principal principal) {
-        model.addAttribute("user", userRepository.findByUsername(principal.getName()));
-        model.addAttribute("pet", new Pet());
+        User currentUser = userRepository.findByUsername(principal.getName());
+        model.addAttribute("user", currentUser);
+
+        Pet pet = new Pet();
+        pet.setOwner(currentUser);
+        pet.setDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+
+        model.addAttribute("pet", pet);
         return "addPet";
     }
 
     @PostMapping("/processPet")
-    public String processPet(@Valid Pet pet, BindingResult result) {
-        if (result.hasErrors()) {
+    public String processPet(@ModelAttribute Pet pet,/* BindingResult result, Model model, Principal principal,*/ @RequestParam("file") MultipartFile file) {
+        /*if (result.hasErrors()) {
+            // -- This is to prevent "Welcome null" message in the header
+            User currentUser = userRepository.findByUsername(principal.getName());
+            model.addAttribute("user", currentUser);
+
             return "addPet";
         }
 
         petRepository.save(pet);
-        return "redirect:/pets";
+        return "redirect:/pets";*/
+        if (file.isEmpty()){
+            return "redirect:/add";
+        }
+        try {
+            Map uploadResult = cloudc.upload(file.getBytes(), ObjectUtils.asMap("resourcetype", "auto"));
+            pet.setPicture(uploadResult.get("url").toString());
+            petRepository.save(pet);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "redirect:/add";
+        }
+        return "redirect:/";
     }
+
+
+
+    @RequestMapping("/update/{id}")
+    public String updateMessage(@PathVariable("id") long id, Model model, Principal principal){
+        model.addAttribute("user", userRepository.findByUsername(principal.getName()));
+        model.addAttribute("pet", petRepository.findById(id).get());
+        return "addMessage";
+    }
+
 
 
 }
