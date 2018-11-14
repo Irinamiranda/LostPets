@@ -13,7 +13,6 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -74,7 +73,7 @@ public class HomeController {
         model.addAttribute("user", currentUser);
 
         model.addAttribute("pets", petRepository.findByOwner(currentUser));
-//        model.addAttribute("messages", messageRepository.findAll());
+
         return "petList";
     }
 
@@ -85,45 +84,33 @@ public class HomeController {
 
         Pet pet = new Pet();
         pet.setOwner(currentUser);
-        pet.setDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
 
         model.addAttribute("pet", pet);
         return "addPet";
     }
 
     @PostMapping("/processPet")
-    public String processPet(@ModelAttribute Pet pet,/* BindingResult result, Model model, Principal principal,*/ @RequestParam("file") MultipartFile file) {
-        /*if (result.hasErrors()) {
+    public String processPet(@Valid @ModelAttribute Pet pet, BindingResult result, Model model, Principal principal, @RequestParam("file") MultipartFile file) {
+        if (result.hasErrors()) {
             // -- This is to prevent "Welcome null" message in the header
             User currentUser = userRepository.findByUsername(principal.getName());
             model.addAttribute("user", currentUser);
 
+
             return "addPet";
         }
-
         petRepository.save(pet);
-        return "redirect:/pets";*/
-        if (file.isEmpty()){
-            return "redirect:/add";
-        }
-        try {
-            Map uploadResult = cloudc.upload(file.getBytes(), ObjectUtils.asMap("resourcetype", "auto"));
-            pet.setPicture(uploadResult.get("url").toString());
-            petRepository.save(pet);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "redirect:/add";
-        }
         return "redirect:/";
-    }
+
+        }
 
 
 
     @RequestMapping("/update/{id}")
-    public String updateMessage(@PathVariable("id") long id, Model model, Principal principal){
+    public String updatePet(@PathVariable("id") long id, Model model, Principal principal){
         model.addAttribute("user", userRepository.findByUsername(principal.getName()));
         model.addAttribute("pet", petRepository.findById(id).get());
-        return "addMessage";
+        return "addPet";
     }
 
 
