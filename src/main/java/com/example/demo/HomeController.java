@@ -95,24 +95,32 @@ public class HomeController {
             // -- This is to prevent "Welcome null" message in the header
             User currentUser = userRepository.findByUsername(principal.getName());
             model.addAttribute("user", currentUser);
-
-
             return "addPet";
         }
-        petRepository.save(pet);
-        return "redirect:/";
 
+        if (file.isEmpty()) {
+            return "redirect:/add";
         }
 
+        try {
+            Map uploadResult = cloudc.upload(file.getBytes(), ObjectUtils.asMap("resourcetype", "auto"));
+            pet.setPicture(uploadResult.get("url").toString());
+            petRepository.save(pet);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "redirect:/addPet";
+        }
+
+        return "redirect:/";
+    }
 
 
     @RequestMapping("/update/{id}")
-    public String updatePet(@PathVariable("id") long id, Model model, Principal principal){
+    public String updatePet(@PathVariable("id") long id, Model model, Principal principal) {
         model.addAttribute("user", userRepository.findByUsername(principal.getName()));
         model.addAttribute("pet", petRepository.findById(id).get());
         return "addPet";
     }
-
 
 
 }

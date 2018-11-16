@@ -11,26 +11,27 @@
 <div th:replace="base :: menubar"></div>
 
 
-    <h2>Add New Pet</h2>
+<h2>Add New Pet</h2>
 <form action="#"
       th:action="@{/processPet}"
       th:object="${pet}"
-      method="post">
+      method="post"
+      enctype="multipart/form-data">
     <input type="hidden" th:field="*{id}"/>
     <input type="hidden" th:field="*{owner}"/>
-<br/><br/>
-<h1>Spring Boot file upload example</h1>
-<form method="POST" action="/add" th:object="${pet}"
-      enctype="multipart/form-data">
+    <br/><br/>
+    <h1>Spring Boot file upload example</h1>
+
     Name: <input type="text" th:field="*{name}"/>
     Category: <input type="text" th:field="*{category}"/>
     Lost on: <input type="text" th:field="*{date}"/>
     Status: <input type="text" th:field="*{status}"/>
+
     <input type="file" name="file"/><br/><br/>
     <input type="submit" value="Submit"/>
-</form>
 
-<div th:replace="base :: footer"></div>
+    <div th:replace="base :: footer"></div>
+</form>
 
 </body>
 </html>
